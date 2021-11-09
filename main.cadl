@@ -1,0 +1,79 @@
+import "@cadl-lang/rest";
+import "@azure-tools/cadl-rpaas";
+import "@azure-tools/cadl-autorest";
+
+
+@armNamespace
+@serviceTitle("PlayFab2")
+@serviceVersion("2021-07-15-preview")
+@produces("application/json")
+@consumes("application/json")
+namespace Microsoft.PlayFab2;
+
+
+using Azure.ARM;
+
+
+enum ProvisioningState {
+  NotSpecified,
+  Accepted,
+  Creating,
+  Deleting,
+  Canceled,
+  Failed,
+  Succeeded
+}
+
+@withVisibility("read")
+model Resource{
+	@doc("The provisioning state.")
+	@visibility("read")
+  provisioningState ?: ProvisioningState;
+
+  @doc("Id of publisher object in PlayFab backend associated to the PlayerAccountPool resource.")
+  @visibility("read")
+  playFabPublisherId ?: string;
+}
+
+model PlayerAccountPoolProperties{
+  
+
+	...Resource;
+}
+
+@doc("Name of the Player Account Pool Parameter.")
+model PlayerAccountPoolNameParameter {
+  @doc("Name of the Player Account Pool Parameter.")
+  @path playerAccountPoolName: string;
+}
+
+
+model TitleProperties {
+  @doc("Id of title object in PlayFab backend.")
+  @visibility("read")
+  playFabTitleId ?: string;
+	...Resource;
+}
+
+@doc("Name of the Title Parameter.")
+model TitleNameParameter {
+  @doc("Name of the Title Parameter.")
+  @path titleName: string;
+}
+
+@doc("Player Account Pool.")
+@armResource({
+  path: "playerAccountPools",
+  parameterType: PlayerAccountPoolNameParameter,
+  collectionName: "PlayerAccountPools",
+})
+model PlayerAccountPool is TrackedResource<PlayerAccountPoolProperties> {};
+
+@doc("Title.")
+@armResource({
+  path: "titles",
+  parameterType: TitleNameParameter,
+  collectionName: "Titles",
+})
+model Title is TrackedResource<TitleProperties> {};
+
